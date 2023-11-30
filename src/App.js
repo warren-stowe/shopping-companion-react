@@ -1,24 +1,35 @@
 import logo from './logo.svg';
 import './App.css';
+import './components/AddIngredient.js';
+import AddIngredient from './components/AddIngredient.js';
+import AddRecipe from './components/AddRecipe';
+import SearchRecipes from './components/SearchRecipes';
+import { useState } from 'react';
 
 function App() {
+
+  const [selectedButton, setSelectedButton] = useState(null);
+
+
+  function handleClick() {
+    this.currentScreen = 'test';
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+    <body>
+
+      <header className="App">
+        <button id='addIngredientBtn' onClick={() => setSelectedButton('AddIngredient')}>Add Ingredient</button>
+        <button id='addRecipeBtn' onClick={() => setSelectedButton('AddRecipe')}>Add Recipe</button>
+        <button id='searchRecipesBtn' onClick={() => setSelectedButton('SearchRecipes')}>Search Recipes</button>
+
       </header>
-    </div>
+      <div id='main-container'>
+        {selectedButton === 'AddIngredient' && <AddIngredient></AddIngredient>}
+        {selectedButton === 'AddRecipe' && <AddRecipe></AddRecipe>}
+        {selectedButton === 'SearchRecipes' && <SearchRecipes></SearchRecipes>}
+      </div>
+    </body>
   );
 }
 
