@@ -1,0 +1,8 @@
+.recipe-inputs {
+  display: flex;
+  justify-content: center;
+}
+
+.recipe-inputs Input {
+  margin: 10px;
+}
