@@ -2,6 +2,7 @@ import { useState } from "react";
 import Input from "../Input/Input";
 import "./AddRecipe.css";
 import Ingredient from "../AddRecipeIngredient/Ingredient";
+import AddIngredient from "../AddIngredient/AddIngredient";
 
 export default function AddRecipe() {
   const NAME = "name";
@@ -14,6 +15,8 @@ export default function AddRecipe() {
     page: "Page",
     ingredients: [],
   });
+
+  const [isAddingIngredient, setIsAddingIngredient] = useState(false);
 
   function handleChange(key, value) {
     let input = { ...recipe };
@@ -35,6 +38,21 @@ export default function AddRecipe() {
 
     setRecipe(input);
     console.log(recipe.name);
+  }
+
+  function addIngredient(ingredient, recipe) {
+    console.log("Adding Ingredient");
+
+    let newRecipe = {
+      ...recipe,
+    };
+
+    newRecipe.ingredients.push(ingredient);
+
+    setRecipe(newRecipe);
+    console.log(JSON.stringify(recipe));
+
+    setIsAddingIngredient(false);
   }
 
   function submitRecipe() {
@@ -79,38 +97,26 @@ export default function AddRecipe() {
         ></Input>
       </div>
 
-      <div className="ingredients-container">
-        {recipe.ingredients.length > 0 &&
-          recipe.ingredients.map((ingredient) => (
-            <Ingredient ingredient={ingredient}></Ingredient>
-          ))}
+      <div>
+        <button onClick={() => setIsAddingIngredient(true)}>
+          Add Ingredient
+        </button>
       </div>
 
-      <h1>In AddRecipe, recipe: </h1>
-      <p>Recipe Name: {recipe.name}</p>
-      <p>Recipe Source: {recipe.source}</p>
-      <p>Recipe Page: {recipe.page}</p>
-      {/* <input
-        type="text"
-        onChange={(e) => handleChange(NAME, e.target.value)}
-        placeholder="Recipe Name"
-      ></input>
+      {isAddingIngredient && (
+        <AddIngredient
+          isForRecipe={true}
+          addIngredient={addIngredient}
+          recipe={recipe}
+        ></AddIngredient>
+      )}
 
-      <input
-        type="text"
-        onChange={(e) => handleChange(SOURCE, e.target.value)}
-        placeholder="Recipe Source"
-      ></input>
-
-      <input
-        type="text"
-        onChange={(e) => handleChange(PAGE, e.target.value)}
-        placeholder="Source Page"
-      ></input> */}
-
-      {/* <button onClick={() => addIngredient()}>+ Ingredient</button> */}
-
-      {/* <button onClick={() => submitRecipe()}>Submit</button> */}
+      <div className="ingredients-container">
+        {recipe.ingredients.length > 0 &&
+          recipe.ingredients.map((ingredient, index) => (
+            <Ingredient ingredient={ingredient} key={index}></Ingredient>
+          ))}
+      </div>
     </>
   );
 }

@@ -31,7 +31,12 @@ function App() {
         </button>
       </header>
       <div id="main-container">
-        {selectedButton === "AddIngredient" && <AddIngredient></AddIngredient>}
+        {selectedButton === "AddIngredient" && (
+          <AddIngredient
+            isForRecipe={false}
+            addIngredient={null}
+          ></AddIngredient>
+        )}
         {selectedButton === "AddRecipe" && <AddRecipe></AddRecipe>}
         {selectedButton === "SearchRecipes" && <SearchRecipes></SearchRecipes>}
       </div>
