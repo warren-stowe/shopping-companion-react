@@ -6,6 +6,7 @@ export default function AddIngredient({ addIngredient, isForRecipe, recipe }) {
   const [aisleInput, setAisle] = useState("");
   const [amountInput, setAmount] = useState("");
   const [measurementInput, setMeasurement] = useState("");
+  const [similarIngredients, setSimilarIngredients] = useState([]); 
 
   const aisles = [
     "",
@@ -50,37 +51,42 @@ export default function AddIngredient({ addIngredient, isForRecipe, recipe }) {
     addIngredient(newIngredient, recipe);
   }
 
-  function submitIngredient() {
+  const submitIngredient = async() => {
     console.log("Submitting Ingredient");
     let ingredient = ingredientInput;
     let aisle = aisleInput;
-    let isInvalid = false;
 
     let message = "";
 
-    if (ingredient.length <= 0) {
+    if (validateIngredient(message)) {
+      alert(ingredient + " (" + aisle + ") submitted");
+      let newIngredient = { ingredient: ingredient, aisle: aisle };
+      const response = await fetch("localhost:8080/ingredients/all");
+      console.log(response.data);
+      // call addIngredient endpoint
+      clearForm();
+    } else {
+      alert("Invalid Input : " + message);
+    }
+  }
+
+  function validateIngredient(message) {
+    let isValid = true;
+
+    if (ingredientInput.length <= 0) {
       let updatedMessage = "\nIngredient is invalid";
       message = updatedMessage;
-      isInvalid = true;
+      isValid = false;
     }
 
-    if (aisle.length <= 0) {
+    if (aisleInput.length <= 0) {
       let updatedMessage = message;
       updatedMessage += "\nAisle is invalid";
       message = updatedMessage;
-      isInvalid = true;
+      isValid = false;
     }
-
-    if (isInvalid) {
-      alert("Invalid Input : " + message);
-    } else {
-      alert(ingredient + " (" + aisle + ") submitted");
-
-      let newIngredient = { ingredient: ingredient, aisle: aisle };
-      // call addIngredient endpoint
-
-      clearForm();
-    }
+    
+    return isValid;
   }
 
   function clearForm() {
@@ -93,8 +99,18 @@ export default function AddIngredient({ addIngredient, isForRecipe, recipe }) {
     }
   }
 
+  function getSimilarIngredients() {
+
+    fetch("http://localhost:8080/ingredients/" + ingredientInput)
+      .then(response => response.json())
+      .then(json => console.log(json))
+      .then(json => setSimilarIngredients(json))
+      .catch(error => console.error(error));
+  }
+
   function updateIngredient(ingredient) {
     setIngredient(ingredient);
+    getSimilarIngredients();
   }
 
   function updateAisle(aisle) {
@@ -122,6 +138,7 @@ export default function AddIngredient({ addIngredient, isForRecipe, recipe }) {
               value={ingredientInput}
               onChange={(event) => updateIngredient(event.target.value)}
             ></input>
+
           </div>
           <div id="input-div">
             <label id="input-label">Aisle</label>
