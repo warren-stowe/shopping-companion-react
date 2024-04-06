@@ -99,18 +99,29 @@ export default function AddIngredient({ addIngredient, isForRecipe, recipe }) {
     }
   }
 
-  function getSimilarIngredients() {
+  function getSimilarIngredients(ingredient) {
 
-    fetch("http://localhost:8080/ingredients/" + ingredientInput)
-      .then(response => response.json())
-      .then(json => console.log(json))
-      .then(json => setSimilarIngredients(json))
-      .catch(error => console.error(error));
+    fetch("http://localhost:8080/ingredients/" + ingredient, {
+      headers: {
+        'Access-Control-Allow-Origin': '*'
+      },
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Failed to fetch data');
+      }
+      return response.json();
+    })
+    .then(json => {
+      console.log("Fetched data: ", json);
+      setSimilarIngredients(json);
+    })
+    .catch(error => console.error(error));
   }
 
   function updateIngredient(ingredient) {
     setIngredient(ingredient);
-    getSimilarIngredients();
+    getSimilarIngredients(ingredient);
   }
 
   function updateAisle(aisle) {
@@ -128,6 +139,7 @@ export default function AddIngredient({ addIngredient, isForRecipe, recipe }) {
   return (
     <div>
       <div id="form-container">
+        <button onClick={() => console.log(JSON.stringify(similarIngredients))}>Click Me</button>
         <form id="form-input-container" onSubmit={submitForm}>
           <div id="input-div">
             <label id="input-label">Ingredient</label>
