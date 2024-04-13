@@ -8,7 +8,7 @@ export default function AddIngredient({ addIngredient, isForRecipe, recipe }) {
   const [amountInput, setAmount] = useState("");
   const [measurementInput, setMeasurement] = useState("");
   const [optionalInput, setOptionalInput] = useState(true);
-  const [similarIngredients, setSimilarIngredients] = useState([]); 
+  const [similarIngredients, setSimilarIngredients] = useState([]);
 
   const aisles = [
     "",
@@ -61,9 +61,8 @@ export default function AddIngredient({ addIngredient, isForRecipe, recipe }) {
       quantity: {
         measurement: measurementInput,
         amount: amountInput,
-        optional: optionalInput
-      }
-
+        optional: optionalInput,
+      },
     };
 
     addIngredient(newIngredient, recipe);
@@ -72,7 +71,7 @@ export default function AddIngredient({ addIngredient, isForRecipe, recipe }) {
   /**
    * Submits the ingredient to the database.  This is used in the addIngredient page of the site.
    */
-  const submitIngredient = async() => {
+  const submitIngredient = async () => {
     let ingredient = ingredientInput;
     let aisle = aisleInput;
 
@@ -82,13 +81,13 @@ export default function AddIngredient({ addIngredient, isForRecipe, recipe }) {
     if (validateIngredient(message)) {
       let newIngredient = { ingredientName: ingredient, aisle: aisle };
       response = await fetch("http://localhost:8080/ingredients/add", {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(newIngredient),
-      })
-      
+      });
+
       console.log("Response: " + JSON.stringify(response));
 
       if (response.ok) {
@@ -96,13 +95,13 @@ export default function AddIngredient({ addIngredient, isForRecipe, recipe }) {
       } else {
         alert("Failed to submit " + ingredient + ".");
       }
-    } 
-  }
+    }
+  };
 
   /**
    * Method to confirm both the ingredient name and aisle are completed.
-   * @param {*} message 
-   * @returns 
+   * @param {*} message
+   * @returns
    */
   function validateIngredient(message) {
     let isValid = true;
@@ -119,7 +118,7 @@ export default function AddIngredient({ addIngredient, isForRecipe, recipe }) {
       message = updatedMessage;
       isValid = false;
     }
-    
+
     return isValid;
   }
 
@@ -139,34 +138,35 @@ export default function AddIngredient({ addIngredient, isForRecipe, recipe }) {
   /**
    * Call the findByIngredientName endpoint in shopping-companion to populate a list of database entries
    * that contain the current ingredient name input.
-   * @param {*} ingredient 
-   * @returns 
+   * @param {*} ingredient
+   * @returns
    */
   function getSimilarIngredients(ingredient) {
-
-    if (ingredient.length === 0) {return;}
+    if (ingredient.length === 0) {
+      return;
+    }
 
     fetch("http://localhost:8080/ingredients/" + ingredient, {
       headers: {
-        'Access-Control-Allow-Origin': '*'
+        "Access-Control-Allow-Origin": "*",
       },
     })
-    .then(response => {
-      if (!response.ok) {
-        throw new Error('Failed to fetch data');
-      }
-      return response.json();
-    })
-    .then(json => {
-      console.log("Fetched data: ", json);
-      setSimilarIngredients(json);
-    })
-    .catch(error => console.error(error));
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Failed to fetch data");
+        }
+        return response.json();
+      })
+      .then((json) => {
+        console.log("Fetched data: ", json);
+        setSimilarIngredients(json);
+      })
+      .catch((error) => console.error(error));
   }
 
   /**
    * Update the ingredient's name field.
-   * @param {} ingredient 
+   * @param {} ingredient
    */
   function updateIngredient(ingredient) {
     setIngredient(ingredient);
@@ -175,7 +175,7 @@ export default function AddIngredient({ addIngredient, isForRecipe, recipe }) {
 
   /**
    * Update the ingredient's aisle in a grocery store.
-   * @param {} aisle 
+   * @param {} aisle
    */
   function updateAisle(aisle) {
     setAisle(aisle);
@@ -183,7 +183,7 @@ export default function AddIngredient({ addIngredient, isForRecipe, recipe }) {
 
   /**
    * Update the amount of an ingredient needed for a recipe.
-   * @param {*} amount 
+   * @param {*} amount
    */
   function updateAmount(amount) {
     setAmount(amount);
@@ -191,7 +191,7 @@ export default function AddIngredient({ addIngredient, isForRecipe, recipe }) {
 
   /**
    * Update the measurement of the ingredient in a recipe.
-   * @param {*} measurement 
+   * @param {*} measurement
    */
   function updateUnit(measurement) {
     setMeasurement(measurement);
@@ -210,7 +210,6 @@ export default function AddIngredient({ addIngredient, isForRecipe, recipe }) {
               value={ingredientInput}
               onChange={(event) => updateIngredient(event.target.value)}
             ></input>
-
           </div>
           <div id="input-div">
             <label id="input-label">Aisle</label>
@@ -257,9 +256,10 @@ export default function AddIngredient({ addIngredient, isForRecipe, recipe }) {
                   ))}
                 </select>
               </div>
-              <div id="checkbox-div">
-                <label id="input-checkbox">Optional</label>
+              <div id="input-div">
+                <label id="input-label">Optional</label>
                 <input
+                  className="select-input"
                   type="checkbox"
                   required
                   value={optionalInput}
@@ -277,8 +277,17 @@ export default function AddIngredient({ addIngredient, isForRecipe, recipe }) {
         </form>
       </div>
 
-      {!isForRecipe && similarIngredients && similarIngredients.map((ingredient, index) => <p>{ingredient.ingredientName}</p>)}
+      {!isForRecipe &&
+        similarIngredients &&
+        similarIngredients.map((ingredient, index) => (
+          <p>{ingredient.ingredientName}</p>
+        ))}
 
+      {isForRecipe &&
+        similarIngredients &&
+        similarIngredients.map((ingredient, index) => (
+          <p>{ingredient.ingredientName}</p>
+        ))}
     </div>
   );
 }
