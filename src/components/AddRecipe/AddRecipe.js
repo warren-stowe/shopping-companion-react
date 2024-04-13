@@ -68,19 +68,6 @@ export default function AddRecipe() {
         body: JSON.stringify(recipe),
       })
 
-    // for (let i = 0; i < recipe.ingredientQuantities.length; i++) {
-    //   const element = recipe.ingredientQuantities[i];
-    //   let ingredient =
-    //     element.name +
-    //     " " +
-    //     element.aisle +
-    //     " " +
-    //     element.amount +
-    //     " " +
-    //     element.measurement;
-    //   console.log("Ingredient " + (i + 1) + ": " + ingredient);
-    // }
-
     console.log(response);
   }
 
@@ -119,8 +106,6 @@ export default function AddRecipe() {
           recipe={recipe}
         ></AddIngredient>
       )}
-
-      {recipe && <p>{JSON.stringify(recipe)}</p>}
 
       <div className="ingredients-container">
         {recipe.ingredientQuantities.length > 0 &&

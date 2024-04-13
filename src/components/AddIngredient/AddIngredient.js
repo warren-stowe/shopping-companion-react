@@ -13,6 +13,7 @@ export default function AddIngredient({ addIngredient, isForRecipe, recipe }) {
 
   const aisles = [
     "",
+    "Baking",
     "Beverages",
     "Bread",
     "Canned",
