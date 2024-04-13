@@ -1,11 +1,13 @@
 import { useState } from "react";
 import "./AddIngredient.css";
+import { useEffect } from "react";
 
 export default function AddIngredient({ addIngredient, isForRecipe, recipe }) {
   const [ingredientInput, setIngredient] = useState("");
   const [aisleInput, setAisle] = useState("");
   const [amountInput, setAmount] = useState("");
   const [measurementInput, setMeasurement] = useState("");
+  const [optionalInput, setOptionalInput] = useState(true);
   const [similarIngredients, setSimilarIngredients] = useState([]); 
 
   const aisles = [
@@ -34,42 +36,74 @@ export default function AddIngredient({ addIngredient, isForRecipe, recipe }) {
     "unit",
   ];
 
-  function submitForm(event) {
+  useEffect(() => {
+    console.log("Re-rendering AddIngredient");
+  }, []);
+
+  /**
+   * This method routes form submission to the appropriate method depending on isForRecipe.
+   */
+  function submitForm() {
     isForRecipe ? addToRecipe() : submitIngredient();
   }
 
+  /**
+   * Adds an ingredient to the current recipe.  This is used in the addRecipe page of the site.
+   */
   function addToRecipe() {
     console.log("Adding to recipe");
 
     let newIngredient = {
-      name: ingredientInput,
-      aisle: aisleInput,
-      measurement: measurementInput,
-      amount: amountInput,
+      ingredient: {
+        ingredientName: ingredientInput,
+        aisle: aisleInput,
+      },
+      quantity: {
+        measurement: measurementInput,
+        amount: amountInput,
+        optional: optionalInput
+      }
+
     };
 
     addIngredient(newIngredient, recipe);
   }
 
+  /**
+   * Submits the ingredient to the database.  This is used in the addIngredient page of the site.
+   */
   const submitIngredient = async() => {
-    console.log("Submitting Ingredient");
     let ingredient = ingredientInput;
     let aisle = aisleInput;
 
     let message = "";
+    let response = "";
 
     if (validateIngredient(message)) {
-      alert(ingredient + " (" + aisle + ") submitted");
-      let newIngredient = { ingredient: ingredient, aisle: aisle };
-      const response = await fetch("localhost:8080/ingredients/all");
-      console.log(response.data);
-      // call addIngredient endpoint
-      clearForm();
-    } else {
-      alert("Invalid Input : " + message);
-    }
+      let newIngredient = { ingredientName: ingredient, aisle: aisle };
+      response = await fetch("http://localhost:8080/ingredients/add", {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newIngredient),
+      })
+      
+      console.log("Response: " + JSON.stringify(response));
+
+      if (response.ok) {
+        alert("Submitted " + ingredient + ".");
+      } else {
+        alert("Failed to submit " + ingredient + ".");
+      }
+    } 
   }
 
+  /**
+   * Method to confirm both the ingredient name and aisle are completed.
+   * @param {*} message 
+   * @returns 
+   */
   function validateIngredient(message) {
     let isValid = true;
 
@@ -89,6 +123,9 @@ export default function AddIngredient({ addIngredient, isForRecipe, recipe }) {
     return isValid;
   }
 
+  /**
+   * Clear the entire form.
+   */
   function clearForm() {
     setIngredient("");
     setAisle("");
@@ -99,7 +136,15 @@ export default function AddIngredient({ addIngredient, isForRecipe, recipe }) {
     }
   }
 
+  /**
+   * Call the findByIngredientName endpoint in shopping-companion to populate a list of database entries
+   * that contain the current ingredient name input.
+   * @param {*} ingredient 
+   * @returns 
+   */
   function getSimilarIngredients(ingredient) {
+
+    if (ingredient.length === 0) {return;}
 
     fetch("http://localhost:8080/ingredients/" + ingredient, {
       headers: {
@@ -119,19 +164,35 @@ export default function AddIngredient({ addIngredient, isForRecipe, recipe }) {
     .catch(error => console.error(error));
   }
 
+  /**
+   * Update the ingredient's name field.
+   * @param {} ingredient 
+   */
   function updateIngredient(ingredient) {
     setIngredient(ingredient);
     getSimilarIngredients(ingredient);
   }
 
+  /**
+   * Update the ingredient's aisle in a grocery store.
+   * @param {} aisle 
+   */
   function updateAisle(aisle) {
     setAisle(aisle);
   }
 
+  /**
+   * Update the amount of an ingredient needed for a recipe.
+   * @param {*} amount 
+   */
   function updateAmount(amount) {
     setAmount(amount);
   }
 
+  /**
+   * Update the measurement of the ingredient in a recipe.
+   * @param {*} measurement 
+   */
   function updateUnit(measurement) {
     setMeasurement(measurement);
   }
@@ -139,7 +200,6 @@ export default function AddIngredient({ addIngredient, isForRecipe, recipe }) {
   return (
     <div>
       <div id="form-container">
-        <button onClick={() => console.log(JSON.stringify(similarIngredients))}>Click Me</button>
         <form id="form-input-container" onSubmit={submitForm}>
           <div id="input-div">
             <label id="input-label">Ingredient</label>
@@ -197,6 +257,15 @@ export default function AddIngredient({ addIngredient, isForRecipe, recipe }) {
                   ))}
                 </select>
               </div>
+              <div id="checkbox-div">
+                <label id="input-checkbox">Optional</label>
+                <input
+                  type="checkbox"
+                  required
+                  value={optionalInput}
+                  onChange={(event) => setOptionalInput(!optionalInput)}
+                ></input>
+              </div>
             </div>
           )}
 
@@ -207,6 +276,9 @@ export default function AddIngredient({ addIngredient, isForRecipe, recipe }) {
           </div>
         </form>
       </div>
+
+      {!isForRecipe && similarIngredients && similarIngredients.map((ingredient, index) => <p>{ingredient.ingredientName}</p>)}
+
     </div>
   );
 }

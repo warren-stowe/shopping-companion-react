@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import "./App.css";
 import "./components/AddIngredient/AddIngredient.js";
 import AddIngredient from "./components/AddIngredient/AddIngredient.js";
@@ -7,6 +8,10 @@ import { useState } from "react";
 
 function App() {
   const [selectedButton, setSelectedButton] = useState(null);
+
+  useEffect(() => {
+    console.log("Re-rendering App, selected button: " + selectedButton);
+  }, []);
 
   return (
     <div>
