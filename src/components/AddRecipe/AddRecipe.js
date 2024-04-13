@@ -10,10 +10,12 @@ export default function AddRecipe() {
   const PAGE = "page";
 
   const [recipe, setRecipe] = useState({
-    name: "Name",
-    source: "Source",
-    page: "Page",
-    ingredients: [],
+    recipe: {
+      recipeName: "Name",
+      source: "Source",
+      sourcePage: "Page"
+    },
+    ingredientQuantities: [],
   });
 
   const [isAddingIngredient, setIsAddingIngredient] = useState(false);
@@ -23,17 +25,17 @@ export default function AddRecipe() {
 
     if (key === NAME) {
       console.log("Changing name");
-      input.name = value;
+      input.recipe.recipeName = value;
     }
 
     if (key === SOURCE) {
       console.log("Changing source");
-      input.source = value;
+      input.recipe.source = value;
     }
 
     if (key === PAGE) {
       console.log("Changing Page");
-      input.page = value;
+      input.recipe.sourcePage = value;
     }
 
     setRecipe(input);
@@ -47,7 +49,7 @@ export default function AddRecipe() {
       ...recipe,
     };
 
-    newRecipe.ingredients.push(ingredient);
+    newRecipe.ingredientQuantities.push(ingredient);
 
     setRecipe(newRecipe);
     console.log(JSON.stringify(recipe));
@@ -55,24 +57,31 @@ export default function AddRecipe() {
     setIsAddingIngredient(false);
   }
 
-  function submitRecipe() {
+  const submitRecipe = async() => {
     console.log("Submitting Recipe to Backend");
-    console.log("Name: " + recipe.name);
-    console.log("Source: " + recipe.source);
-    console.log("Source Page: " + recipe.page);
 
-    for (let i = 0; i < recipe.ingredients.length; i++) {
-      const element = recipe.ingredients[i];
-      let ingredient =
-        element.name +
-        " " +
-        element.aisle +
-        " " +
-        element.amount +
-        " " +
-        element.measurement;
-      console.log("Ingredient " + (i + 1) + ": " + ingredient);
-    }
+    let response = await fetch("http://localhost:8080/recipes/add", {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(recipe),
+      })
+
+    // for (let i = 0; i < recipe.ingredientQuantities.length; i++) {
+    //   const element = recipe.ingredientQuantities[i];
+    //   let ingredient =
+    //     element.name +
+    //     " " +
+    //     element.aisle +
+    //     " " +
+    //     element.amount +
+    //     " " +
+    //     element.measurement;
+    //   console.log("Ingredient " + (i + 1) + ": " + ingredient);
+    // }
+
+    console.log(response);
   }
 
   return (
@@ -111,12 +120,16 @@ export default function AddRecipe() {
         ></AddIngredient>
       )}
 
+      {recipe && <p>{JSON.stringify(recipe)}</p>}
+
       <div className="ingredients-container">
-        {recipe.ingredients.length > 0 &&
-          recipe.ingredients.map((ingredient, index) => (
+        {recipe.ingredientQuantities.length > 0 &&
+          recipe.ingredientQuantities.map((ingredient, index) => (
             <Ingredient ingredient={ingredient} key={index}></Ingredient>
           ))}
       </div>
+
+      <button onClick={() => submitRecipe()}>Submit Recipe</button>
     </>
   );
 }

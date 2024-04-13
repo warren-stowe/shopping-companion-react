@@ -2,8 +2,8 @@ export default function Ingredient({ ingredient }) {
   return (
     <>
       <p>
-        {ingredient.name}: {ingredient.amount} {ingredient.measurement},{" "}
-        {ingredient.aisle}
+        {ingredient.ingredient.ingredientName}: {ingredient.quantity.amount} {ingredient.quantity.measurement},{" "}
+        {ingredient.ingredient.aisle}
       </p>
     </>
   );

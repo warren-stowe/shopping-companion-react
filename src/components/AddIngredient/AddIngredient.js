@@ -3,6 +3,7 @@ import "./AddIngredient.css";
 import { useEffect } from "react";
 
 export default function AddIngredient({ addIngredient, isForRecipe, recipe }) {
+  const [ingredientId, setIngredientId] = useState(0);
   const [ingredientInput, setIngredient] = useState("");
   const [aisleInput, setAisle] = useState("");
   const [amountInput, setAmount] = useState("");
@@ -55,6 +56,7 @@ export default function AddIngredient({ addIngredient, isForRecipe, recipe }) {
 
     let newIngredient = {
       ingredient: {
+        id: ingredientId,
         ingredientName: ingredientInput,
         aisle: aisleInput,
       },
@@ -127,6 +129,7 @@ export default function AddIngredient({ addIngredient, isForRecipe, recipe }) {
    * Clear the entire form.
    */
   function clearForm() {
+    setIngredientId(0);
     setIngredient("");
     setAisle("");
 
@@ -197,6 +200,18 @@ export default function AddIngredient({ addIngredient, isForRecipe, recipe }) {
     setMeasurement(measurement);
   }
 
+  function getExistingIngredient(existingIngredient) {
+    console.log(JSON.stringify(existingIngredient));
+
+    setIngredientId(existingIngredient.id);
+    setIngredient(existingIngredient.ingredientName);
+    setAisle(existingIngredient.aisle);
+
+    console.log(JSON.stringify(ingredientInput));
+    console.log(JSON.stringify(ingredientId));
+    console.log(JSON.stringify(aisleInput));
+  }
+
   return (
     <div>
       <div id="form-container">
@@ -207,10 +222,9 @@ export default function AddIngredient({ addIngredient, isForRecipe, recipe }) {
               className="text-input"
               type="text"
               required
-              value={ingredientInput}
+              value={ingredientInput}z
               onChange={(event) => updateIngredient(event.target.value)}
             ></input>
-
           </div>
           <div id="input-div">
             <label id="input-label">Aisle</label>
@@ -261,7 +275,6 @@ export default function AddIngredient({ addIngredient, isForRecipe, recipe }) {
                 <label id="input-checkbox">Optional</label>
                 <input
                   type="checkbox"
-                  required
                   value={optionalInput}
                   onChange={(event) => setOptionalInput(!optionalInput)}
                 ></input>
@@ -276,6 +289,8 @@ export default function AddIngredient({ addIngredient, isForRecipe, recipe }) {
           </div>
         </form>
       </div>
+
+      {isForRecipe && similarIngredients && similarIngredients.map((ingredient, index) => <button onClick={() => {getExistingIngredient(ingredient)}}>{ingredient.ingredientName}</button>)}
 
       {!isForRecipe && similarIngredients && similarIngredients.map((ingredient, index) => <p>{ingredient.ingredientName}</p>)}
 
