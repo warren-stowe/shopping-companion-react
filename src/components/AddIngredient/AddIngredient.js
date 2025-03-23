@@ -17,6 +17,7 @@ export default function AddIngredient({ addIngredient, isForRecipe, recipe }) {
     "Beverages",
     "Bread",
     "Canned",
+    "Condiments",
     "Dairy",
     "Frozen",
     "International",
