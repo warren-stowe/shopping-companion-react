@@ -1,0 +1,3 @@
+1: Add the selected recipes and their sources to the ingredient list output
+2: Remote work - Prevent duplicate ingredients from being added to the database
+3: Add lists of recipes to the UI (currently the only way to see all the recipes is to hit the endpoint in postman or remember all of them)

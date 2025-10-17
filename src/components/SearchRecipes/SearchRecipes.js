@@ -1,17 +1,14 @@
-import { useState } from "react";
-import "./SearchRecipes.css";
+import { useState, useRef } from "react";
+import styles from "./SearchRecipes.module.css";
 
 export default function SearchRecipes() {
-  const [search, setSearch] = useState("");
   const [foundRecipes, setFoundRecipes] = useState([]);
   const [recipeList, setRecipeList] = useState([]);
 
-  function handleChange(input) {
-    setSearch(input);
-    searchRecipes(input);
-  }
+  const searchRef = useRef("");
 
-  const searchRecipes = async (input) => {
+  const searchRecipes = async () => {
+    const input = searchRef.current.value;
     try {
       const response = await fetch("http://localhost:8080/recipes/search/" + input, {
         method: 'GET',
@@ -40,7 +37,15 @@ export default function SearchRecipes() {
     console.log(recipeList);
   }
 
+  function removeFromRecipes(recipe) {
+    return setRecipeList(recipeList.filter((r) => r.recipeName != recipe));
+  }
+
   const submitList = async () => {
+
+    if (recipeList.length <= 0) {
+      throw new Error("Please select at least 1 recipe");
+    }
 
     let recipeIds = recipeList.map(recipe => recipe.id);
 
@@ -68,26 +73,32 @@ export default function SearchRecipes() {
 
   return (
     <>
-      <div className="search-container">
+      <div className={styles.searchContainer}>
         <span>🔎</span>
         <input
           type="text"
-          onChange={(event) => handleChange(event.target.value)}
-          value={search}
+          ref={searchRef}
+          onChange={() => searchRecipes()}
         ></input>
       </div>
 
       <h1>Found Recipes</h1>
       {foundRecipes && foundRecipes.map((recipe, index) => (
-        <button key={index} onClick={() => { addToRecipes(recipe) }}>{recipe.recipeName}</button>
+        <li className={styles.foundRecipe} key={index} >
+          <button onClick={() => { addToRecipes(recipe) }}>Add</button>
+          {recipe.recipeName}
+        </li>
       ))}
 
       <h1>Selected Recipes</h1>
       {recipeList && recipeList.map((recipe, index) => (
-        <p>{recipe.recipeName}</p>
+        <li className={styles.foundRecipe} key={index} >
+          <button className={styles.removeRecipeButton} onClick={() => { removeFromRecipes(recipe.recipeName)}}>Remove</button>
+          {recipe.recipeName}
+        </li>
       ))}
 
-      <button onClick={() => { submitList() }}>Get Ingredient List</button>
+      <button className={styles.getIngredientList} onClick={() => { submitList() }}>Get Ingredient List</button>
     </>
   );
 }
