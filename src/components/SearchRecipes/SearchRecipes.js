@@ -1,16 +1,17 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import styles from "./SearchRecipes.module.css";
 
 export default function SearchRecipes() {
+  const allRecipes = useRef();
   const [foundRecipes, setFoundRecipes] = useState([]);
   const [recipeList, setRecipeList] = useState([]);
 
   const searchRef = useRef("");
 
-  const searchRecipes = async () => {
-    const input = searchRef.current.value;
-    try {
-      const response = await fetch("http://localhost:8080/recipes/search/" + input, {
+  useEffect(() => {
+    const fetchRecipes = async () => {
+      try {
+      const response = await fetch("http://localhost:8080/recipes/all/", {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -20,16 +21,34 @@ export default function SearchRecipes() {
       if (!response.ok) {
         throw new Error("Failed to fetch recipes");
       }
-
+      
       const data = await response.json();
-      setFoundRecipes(data);
-      console.log(JSON.stringify(data));
-
-      setFoundRecipes(data);
-      console.log("Found recipes: " + JSON.stringify(foundRecipes));
+      allRecipes.current = data;
+      console.log("Found recipes: " + JSON.stringify(allRecipes.current));
     } catch (error) {
       console.error("Error searching recipes: ", error);
     }
+  };
+
+  fetchRecipes();
+
+  }, []);
+
+  const searchRecipes = () => {
+    const input = searchRef.current.value;
+
+    if (input.length == 0) {
+      setFoundRecipes([]);
+      return;
+    }
+
+    let results = allRecipes.current.filter((recipe) => {
+      if (recipe.recipeName.includes(input)) {
+        return recipe;
+      }
+    });
+
+    setFoundRecipes(results);
   }
 
   function addToRecipes(recipe) {
