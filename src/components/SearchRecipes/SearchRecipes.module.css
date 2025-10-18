@@ -14,10 +14,37 @@ h1 {
   margin-left: 40px;
 }
 
+li {
+  list-style-type: none;
+}
+
 .searchContainer {
   display: flex;
   justify-content: center;
-  margin-top: 50px;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  padding: 6px 10px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.2s ease;
+  max-width: 400px;
+  margin: 50px auto;
+}
+
+.searchContainer:focus-within {
+  box-shadow: 0 0 0 2px #4caf50; /* highlight when focused */
+}
+
+.input {
+  border: none;
+  outline: none;
+  background: transparent;
+  flex: 1;
+  font-size: 1rem;
+  color: #333;
+}
+
+.input::placeholder {
+  color: #aaa;
 }
 
 .removeRecipeButton {
@@ -33,4 +60,30 @@ h1 {
   margin-top: 50px;
   width: 200px;
 }
+
+.flexContainer {
+  display:flex;
+  flex-direction: row;
+  justify-content: space-around;
+}
+
+.columnContainer {
+  width: 40%;
+}
+
+.selectedRecipes {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.selectedRecipes h1 {
+  margin: 0px 0px 0px 40px;
+}
+
+.selectedRecipes button {
+  margin: 0;
+  padding: 0;
+}
+
 

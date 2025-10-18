@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import styles from "./SearchRecipes.module.css";
 
 export default function SearchRecipes() {
-  const allRecipes = useRef();
+  const [allRecipes, setAllRecipes] = useState([]);
   const [foundRecipes, setFoundRecipes] = useState([]);
   const [recipeList, setRecipeList] = useState([]);
 
@@ -23,8 +23,24 @@ export default function SearchRecipes() {
       }
       
       const data = await response.json();
-      allRecipes.current = data;
-      console.log("Found recipes: " + JSON.stringify(allRecipes.current));
+
+      const sorted = data.sort((a, b) => {
+        const nameA = a.recipeName.toUpperCase();
+        const nameB = b.recipeName.toUpperCase();
+      
+        if (nameA < nameB) {
+          return -1;
+        }
+
+        if (nameA > nameB) {
+          return 1;
+        }
+
+        return 0;
+      });
+
+      setAllRecipes(sorted);
+      console.log("Found recipes: " + JSON.stringify(allRecipes));
     } catch (error) {
       console.error("Error searching recipes: ", error);
     }
@@ -42,7 +58,7 @@ export default function SearchRecipes() {
       return;
     }
 
-    let results = allRecipes.current.filter((recipe) => {
+    let results = allRecipes.filter((recipe) => {
       if (recipe.recipeName.includes(input)) {
         return recipe;
       }
@@ -93,31 +109,56 @@ export default function SearchRecipes() {
   return (
     <>
       <div className={styles.searchContainer}>
-        <span>🔎</span>
         <input
           type="text"
           ref={searchRef}
           onChange={() => searchRecipes()}
-        ></input>
+          placeholder="Search recipes..."
+          className={styles.input}
+        />
       </div>
 
-      <h1>Found Recipes</h1>
-      {foundRecipes && foundRecipes.map((recipe, index) => (
-        <li className={styles.foundRecipe} key={index} >
-          <button onClick={() => { addToRecipes(recipe) }}>Add</button>
-          {recipe.recipeName}
-        </li>
-      ))}
+      <div className={styles.flexContainer}>
+        <div className={styles.columnContainer}>
+          <h1>Found Recipes</h1>
+          <ul>
+            {foundRecipes && foundRecipes.map((recipe, index) => (
+              <li className={styles.foundRecipe} key={index} >
+                <button onClick={() => { addToRecipes(recipe) }}>Add</button>
+                {recipe.recipeName}
+              </li>
+            ))}
+          </ul>
 
-      <h1>Selected Recipes</h1>
-      {recipeList && recipeList.map((recipe, index) => (
-        <li className={styles.foundRecipe} key={index} >
-          <button className={styles.removeRecipeButton} onClick={() => { removeFromRecipes(recipe.recipeName)}}>Remove</button>
-          {recipe.recipeName}
-        </li>
-      ))}
+          <div className={styles.selectedRecipes}>
+            <h1>Selected Recipes</h1>
+            <button className={styles.getIngredientList} onClick={() => { submitList() }}>Get Ingredient List</button>
+          </div>
 
-      <button className={styles.getIngredientList} onClick={() => { submitList() }}>Get Ingredient List</button>
+          <ul>
+          {recipeList && recipeList.map((recipe, index) => (
+            <li className={styles.foundRecipe} key={index} >
+              <button className={styles.removeRecipeButton} onClick={() => { removeFromRecipes(recipe.recipeName)}}>Remove</button>
+              {recipe.recipeName}
+            </li>
+          ))}
+          </ul>
+        </div>
+
+        <div className={styles.columnContainer}>
+          <h1>All Recipes</h1>
+          <ul>
+
+          {allRecipes && allRecipes.map((recipe, index) => (
+            <li className={styles.foundRecipe} key={index} >
+              <button onClick={() => { addToRecipes(recipe) }}>Add</button>
+              {recipe.recipeName}
+            </li>
+          ))}
+          </ul>
+        </div>
+      </div>
+
     </>
   );
 }
