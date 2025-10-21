@@ -51,7 +51,7 @@ export default function SearchRecipes() {
   }, []);
 
   const searchRecipes = () => {
-    const input = searchRef.current.value;
+    const input = searchRef.current.value.toLowerCase();
 
     if (input.length == 0) {
       setFoundRecipes([]);
@@ -59,7 +59,7 @@ export default function SearchRecipes() {
     }
 
     let results = allRecipes.filter((recipe) => {
-      if (recipe.recipeName.includes(input)) {
+      if (recipe.recipeName.toLowerCase().includes(input)) {
         return recipe;
       }
     });
