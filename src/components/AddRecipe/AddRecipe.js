@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Input from "../Input/Input";
-import "./AddRecipe.css";
+import styles from "./AddRecipe.module.css";
 import Ingredient from "../AddRecipeIngredient/Ingredient";
 import AddIngredient from "../AddIngredient/AddIngredient";
 
@@ -72,8 +72,8 @@ export default function AddRecipe() {
   }
 
   return (
-    <>
-      <div className="recipe-inputs">
+    <div className={styles.addRecipe}>
+      <div className={styles.recipeInputs}>
         <Input
           field={NAME}
           handleChange={handleChange}
@@ -94,7 +94,7 @@ export default function AddRecipe() {
       </div>
 
       <div>
-        <button onClick={() => setIsAddingIngredient(true)}>
+        <button className={styles.outerButton} onClick={() => setIsAddingIngredient(true)}>
           Add Ingredient
         </button>
       </div>
@@ -107,14 +107,14 @@ export default function AddRecipe() {
         ></AddIngredient>
       )}
 
-      <div className="ingredients-container">
+      <div className={styles.ingredientsContainer}>
         {recipe.ingredientQuantities.length > 0 &&
           recipe.ingredientQuantities.map((ingredient, index) => (
             <Ingredient ingredient={ingredient} key={index}></Ingredient>
           ))}
       </div>
 
-      <button onClick={() => submitRecipe()}>Submit Recipe</button>
-    </>
+      <button className={styles.outerButton} onClick={() => submitRecipe()}>Submit Recipe</button>
+    </div>
   );
 }

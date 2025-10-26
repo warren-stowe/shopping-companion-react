@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import styles from "./SearchRecipes.module.css";
+import InteractableListItem from "../InteractableListItem/InteractableListItem";
 
 export default function SearchRecipes() {
   const [allRecipes, setAllRecipes] = useState([]);
@@ -73,7 +74,7 @@ export default function SearchRecipes() {
   }
 
   function removeFromRecipes(recipe) {
-    return setRecipeList(recipeList.filter((r) => r.recipeName != recipe));
+    return setRecipeList(recipeList.filter((r) => r.recipeName != recipe.recipeName));
   }
 
   const submitList = async () => {
@@ -107,7 +108,7 @@ export default function SearchRecipes() {
   }
 
   return (
-    <>
+    <div className={styles.searchRecipes}>
       <div className={styles.searchContainer}>
         <input
           type="text"
@@ -123,24 +124,18 @@ export default function SearchRecipes() {
           <h1>Found Recipes</h1>
           <ul>
             {foundRecipes && foundRecipes.map((recipe, index) => (
-              <li className={styles.foundRecipe} key={index} >
-                <button onClick={() => { addToRecipes(recipe) }}>Add</button>
-                {recipe.recipeName}
-              </li>
+              <InteractableListItem recipe={recipe} handleClick={addToRecipes} index={index} action="add"></InteractableListItem>
             ))}
           </ul>
 
           <div className={styles.selectedRecipes}>
             <h1>Selected Recipes</h1>
-            <button className={styles.getIngredientList} onClick={() => { submitList() }}>Get Ingredient List</button>
+            <button className={`${styles.searchRecipesButton} ${styles.getIngredientListButton}`} onClick={() => { submitList() }}>Get Ingredient List</button>
           </div>
 
           <ul>
           {recipeList && recipeList.map((recipe, index) => (
-            <li className={styles.foundRecipe} key={index} >
-              <button className={styles.removeRecipeButton} onClick={() => { removeFromRecipes(recipe.recipeName)}}>Remove</button>
-              {recipe.recipeName}
-            </li>
+            <InteractableListItem recipe={recipe} handleClick={removeFromRecipes} index={index} action="remove"></InteractableListItem>
           ))}
           </ul>
         </div>
@@ -150,15 +145,12 @@ export default function SearchRecipes() {
           <ul>
 
           {allRecipes && allRecipes.map((recipe, index) => (
-            <li className={styles.foundRecipe} key={index} >
-              <button onClick={() => { addToRecipes(recipe) }}>Add</button>
-              {recipe.recipeName}
-            </li>
+            <InteractableListItem recipe={recipe} handleClick={addToRecipes} index={index} action="add"></InteractableListItem>
           ))}
           </ul>
         </div>
       </div>
 
-    </>
+    </div>
   );
 }
